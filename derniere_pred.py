@@ -1,0 +1,46 @@
+import struct as st
+import matplotlib.pyplot as plt
+
+ETAPE = lambda I, intitulé: print(f"\033[92m[OK]\033[0m Etape {I}: {intitulé}")
+
+def normer(l):
+	_min, _max = min(l), max(l)
+	return [(e-_min)/(_max-_min) for e in l]
+
+####################################################################################
+
+d = "15m"
+
+T = 0#(30)*24  * 4
+N = 8
+INTERVALLE_MAX = 256
+DEPART = INTERVALLE_MAX * N
+
+HEURES = DEPART + T
+
+from bitget_donnee import DONNEES_BITGET, faire_un_csv
+
+donnees = DONNEES_BITGET(HEURES, d=d)
+csv = faire_un_csv(donnees, NOM="bitgetBTCUSDT")
+
+with open('prixs/bitgetBTCUSDT.csv', 'w') as co:
+	co.write(csv)
+
+ETAPE(1, "Ecriture CSV")
+
+####################################################################################
+
+with open("structure_generale.bin", 'rb') as co:
+	bins = co.read()
+	(I,) = st.unpack('I', bins[:4])
+	elements = st.unpack('I', bins[4:])
+	#
+	MEGA_T, = elements
+
+from calcule import calcule
+
+les_Amplitudes, les_predictions, les_delats = calcule(donnees, "bitgetBTC", MEGA_T)
+
+print(f"les_Amplitudes  = {les_Amplitudes}")
+print(f"les_predictions = {les_predictions}")
+print(f"les_delats      = {les_delats}")
