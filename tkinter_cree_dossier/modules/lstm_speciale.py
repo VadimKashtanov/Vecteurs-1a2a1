@@ -10,12 +10,14 @@ class LSTM1D_SPECIALE(Module_Mdl):	#	f(ax0+bx1+cx2+d)
 	params = {
 		'H' : 0,
 		'N' : 1,
+		'C0' : 1,
 		#'activ' : 0
 	}
 	def cree_ix(self):
 		#	Params
-		H = self.params['H']
-		N = self.params['N']
+		H  = self.params['H' ]
+		N  = self.params['N' ]
+		C0 = self.params['C0']
 
 		X = self.X[0]
 		Y = self.Y[0]
@@ -28,25 +30,25 @@ class LSTM1D_SPECIALE(Module_Mdl):	#	f(ax0+bx1+cx2+d)
 		self.ix = []
 
 		self.elements = {
-			'x' : MODULE_i_Y(X=[X], Y=[X], params={}).cree_ix(),
+			'x' : MODULE_i_Y(X=[X], Y=[X], params={}, do=self.do,dc=self.dc).cree_ix(),
 			#
-			'x;h'   : MODULE_i_Y_union_2(X=[X,Y],   Y=[X+Y],   params={}).cree_ix(),
-			'x;h;c' : MODULE_i_Y_union_2(X=[X+Y,Y], Y=[X+Y+Y], params={}).cree_ix(),
+			'x;h'   : MODULE_i_Y_union_2(X=[X,Y],   Y=[X+Y],   params={}, do=self.do,dc=self.dc).cree_ix(),
+			'x;h;c' : MODULE_i_Y_union_2(X=[X+Y,Y], Y=[X+Y+Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 			#
 			# f = logistique(sF = Fx@x + Fh@h[-1] + Fc@c[-1] + Fb)
-			'f' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique}).cree_ix(),
+			'f' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique, 'C0':C0}, do=self.do,dc=self.dc).cree_ix(),
 			# i = logistique(sI = Ix@x + Ih@h[-1] + Ic@c[-1] + Ib)
-			'i' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique}).cree_ix(),
+			'i' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique, 'C0':C0}, do=self.do,dc=self.dc).cree_ix(),
 			#u =       tanh(sU = Ux@x + Uh@h[-1] +          + Ub)
-			'u' : RESEAU(X=[X+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':_tanh}).cree_ix(),
+			'u' : RESEAU(X=[X+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':_tanh, 'C0':C0}, do=self.do,dc=self.dc).cree_ix(),
 			#c = f*c[-1] + i*u
-			'c' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
+			'c' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 			#ch = tanh(c)
-			'ch' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}).cree_ix(),
+			'ch' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}, do=self.do,dc=self.dc).cree_ix(),
 			#o = logistique(sO = Ox@x + Oh@h[-1] + Oc@c    + Ob)
-			'o' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique}).cree_ix(),
+			'o' : RESEAU(X=[X+Y+Y], Y=[Y], params={'H':H, 'N':N, 'activ cachée':_tanh, 'activ sortie':logistique, 'C0':C0}, do=self.do,dc=self.dc).cree_ix(),
 			#h = o * ch
-			'h' : MODULE_i_Mul2(X=[Y,Y], Y=[Y], params={}).cree_ix(),
+			'h' : MODULE_i_Mul2(X=[Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 		}
 
 		#	======================
