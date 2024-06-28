@@ -166,17 +166,18 @@ int main() {
 	//	=========================================================
 
 	//	--- Re-cree le Model ---
-	//cree_mdl_depuis_pre_mdl(btcusdt);
+	cree_mdl_depuis_pre_mdl(btcusdt);
 
 	//	--- Mdl_t ---
 	Mdl_t * mdl = ouvrire_mdl("mdl.bin");
 	plumer_model(mdl);
-	montrer_Y_du_model(mdl, btcusdt);
+	//montrer_Y_du_model(mdl, btcusdt);
 	//tester_le_model(mdl, btcusdt);
 
 	//	=========================================================
 	//	=========================================================
 	//	=========================================================
+	uint un_mois = ((24*30 - (24*30 % MEGA_T)) / MEGA_T) * MEGA_T;
 	//
 //plumer_le_score(mdl, btcusdt);
 	// 
@@ -185,18 +186,24 @@ int main() {
 		printf(" === Echope %i ===\n", e);
 		
 		//
-		uint I        = 100;
+		uint I        = 10;
 		uint tous_les = 10;
 		
 		//
 		srand(time(NULL));
 		uint ts[GRAND_T];
 		FOR(0, t, GRAND_T)
-			ts[t] = rand() % (btcusdt->T - MEGA_T - 1);
+			ts[t] = rand() % (btcusdt->T - MEGA_T - 1 - un_mois);
 		uint * ts__d = cpu_vers_gpu<uint>(ts, GRAND_T);
 
 		//
-		opti(mdl, btcusdt, ts__d, I, tous_les, ADAM, 3e-3);
+		opti(
+			mdl, btcusdt,
+			ts__d,
+			I,
+			tous_les,
+			SGD, 3e-5
+		);
 		ecrire_mdl("mdl.bin", mdl);
 
 		if (e % 10 == 0) {

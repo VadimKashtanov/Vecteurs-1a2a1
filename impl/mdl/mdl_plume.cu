@@ -71,11 +71,13 @@ void mdl_plume_grad(Mdl_t * mdl, BTCUSDT_t * btcusdt, uint * ts__d) {
 			free( p);
 			free(dp);
 			//
-			printf("%3.i| [ID=%2.i] Y=%5.i : Grad max=%+f; min=%+f absmax=%+f moy=%+f ;; Poid max=%+f; min=%+f absmax=%+f moy=%+f ;; Poids=%i\n",
+			printf("%3.i| [ID=%2.i] Y=%5.i : Grad max=%+f; min=%+f absmax=%+f moy=%+f ;; Poid max=%+f; min=%+f absmax=%+f moy=%+f ;; Poids=%7.i  (do=%+f dc=%+f)\n",
 				i, inst->ID, inst->Y,
 				gmax, gmin, gabsmax, gmoyabs,
 				pmax, pmin, pabsmax, pmoyabs,
-				inst->P
+				inst->P,
+				inst->drop_out,
+				inst->drop_connect
 			);
 		};
 	};
