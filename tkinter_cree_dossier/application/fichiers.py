@@ -55,11 +55,17 @@ class Fichiers(tk.LabelFrame):
 				(ID,),bins = st_lire(bins, 1*'I')
 				(x,y),bins = st_lire(bins, 2*'I')
 				self.application.add_frame(modules_models[ID](), x=x, y=y)
+				#
 				self.application.frames[-1].module.X, bins = st_lire(bins, len(self.application.frames[-1].module.X)*'I')
 				self.application.frames[-1].module.Y, bins = st_lire(bins, len(self.application.frames[-1].module.Y)*'I')
+				#
 				params, bins = st_lire(bins, len(self.application.frames[-1].module.params)*'I')
 				for i,k in enumerate(self.application.frames[-1].module.params.keys()):
 					self.application.frames[-1].module.params[k] = params[i]
+				#
+				(do, dc), bins = st_lire(bins, 'ff')
+				self.application.frames[-1].module.do = do
+				self.application.frames[-1].module.dc = dc
 				#
 				self.application.frames[-1].set_entree_depuis_valeurs_module()
 			#
@@ -102,6 +108,8 @@ class Fichiers(tk.LabelFrame):
 				co.write(st.pack('I'*len(f.module.X), *f.module.X))
 				co.write(st.pack('I'*len(f.module.Y), *f.module.Y))
 				co.write(st.pack('I'*len(f.module.params), *list(f.module.params.values())))
+				#
+				co.write(st.pack('ff', f.module.do, f.module.dc))
 
 			for (iA,sA),(iB,eB),t in self.application.canvas.connections:
 				co.write(st.pack('IIIII', iA,sA,iB,eB,abs(t)))
@@ -164,18 +172,18 @@ class Fichiers(tk.LabelFrame):
 		#vraies_sorties = [ i    for i,l in enumerate(ix) if ix[i]['sortie'] and not i in les_x_non_none ]
 		la_sortie = depart_i[self.application.vraie_sortie] + [i for i,__l in enumerate(self.application.frames[self.application.vraie_sortie].module.ix) if __l['sortie']][0]
 
+		print(f'La sortie = {la_sortie}')
+
 		#	fichier.st.bin
 		bins = b''
 		bins += st.pack('I', len(ix))
 		for pos,i in enumerate(ix):
 			#	Verification
-			inst = i['i'](i['X'], i['y'], i['p'])
+			inst = i['i'](i['X'], i['y'], i['p'], i['do'], i['dc'])
 			print(f'{pos}| {i}')
 			inst.assert_coherance()
 			if pos != 0:
 				for j,_x in enumerate(i['x']):
-					#print(len(ix), _x, ix[_x])
-					#print(ix[_x]['y'], i['X'][j])
 					assert ix[_x]['y'] == i['X'][j]
 			#	ID
 			bins += st.pack('I', liste_insts.index(inst.__class__))
@@ -194,6 +202,8 @@ class Fichiers(tk.LabelFrame):
 			bins += st.pack('I', i['y'])
 			#	Params
 			bins += st.pack('I'*len(i['p']), *i['p'])
+			#	Drop out, Drop connect
+			bins += st.pack('ff', i['do']/100, i['dc']/100)
 		#
 		bins += st.pack('I', la_sortie)
 

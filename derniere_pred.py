@@ -1,7 +1,14 @@
 import struct as st
 import matplotlib.pyplot as plt
 
-ETAPE = lambda I, intitulé: print(f"\033[92m[OK]\033[0m Etape {I}: {intitulé}")
+with open("structure_generale.bin", 'rb') as co:
+	bins = co.read()
+	(I,) = st.unpack('I', bins[:4])
+	elements = st.unpack('I', bins[4:])
+	#
+	MEGA_T, = elements
+
+####################################################################################
 
 def normer(l):
 	_min, _max = min(l), max(l)
@@ -9,14 +16,17 @@ def normer(l):
 
 ####################################################################################
 
-d = "15m"
+d = "1H" #"15m"
 
-T = 0#(30)*24  * 4
+T = 1 * MEGA_T
+
+P = 1
+
 N = 8
 INTERVALLE_MAX = 256
 DEPART = INTERVALLE_MAX * N
 
-HEURES = DEPART + T
+HEURES = DEPART + T + P
 
 from bitget_donnee import DONNEES_BITGET, faire_un_csv
 
@@ -26,16 +36,7 @@ csv = faire_un_csv(donnees, NOM="bitgetBTCUSDT")
 with open('prixs/bitgetBTCUSDT.csv', 'w') as co:
 	co.write(csv)
 
-ETAPE(1, "Ecriture CSV")
-
 ####################################################################################
-
-with open("structure_generale.bin", 'rb') as co:
-	bins = co.read()
-	(I,) = st.unpack('I', bins[:4])
-	elements = st.unpack('I', bins[4:])
-	#
-	MEGA_T, = elements
 
 from calcule import calcule
 

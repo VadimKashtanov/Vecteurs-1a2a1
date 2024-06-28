@@ -6,9 +6,11 @@ from os import system
 
 ARONDIRE_AU_MODULO = lambda x,mod: (x + (mod - (x%mod)) if x%mod!=0 else x)
 
+ARONDIRE_AU_MODULO_SUPERIEUR = lambda x,mod: ARONDIRE_AU_MODULO(x+mod,mod)
+
 milliseconde = lambda la: int(la * 1000   )*1
 seconde      = lambda la: int(la          )*1000
-heure        = lambda la: int(la / (60*60))*1000*60*60
+heure        = lambda la: int(la*1000)#int(la / (60*60))*1000*60*60
 
 requette_bitget = lambda de, a, SYMBOLE, d: eval(
 	requests.get(
@@ -18,16 +20,23 @@ requette_bitget = lambda de, a, SYMBOLE, d: eval(
 
 HEURES_PAR_REQUETTE = 100
 
-def DONNEES_BITGET(HEURES, d):
+def DONNEES_BITGET(__HEURES, d):
 	assert d in ('1H', '1m', '15m')
 	print(f"L'intervalle choisie est : {d}")
-	assert d == '15m'
+	print(f"Demande de {__HEURES} elements de {d}")
+	#assert d == '15m'
 	#
-	HEURES = ARONDIRE_AU_MODULO(HEURES, HEURES_PAR_REQUETTE)
+	HEURES = ARONDIRE_AU_MODULO_SUPERIEUR(__HEURES, HEURES_PAR_REQUETTE)
+	#
+	correspondance_millisecondes = {
+		'1H'  : 60*60*1000,
+		'15m' : 15*60*1000,
+		'1m'  :  1*60*1000
+	}
 	#
 	la = heure(time.time())
 	heures_voulues = [
-		la - 15*60*1000*i # <<--- 15= 15mins,  60=60mins=1h
+		la - correspondance_millisecondes[d]*i
 		for i in range(ARONDIRE_AU_MODULO(HEURES, HEURES_PAR_REQUETTE))
 	][::-1]
 
@@ -52,7 +61,7 @@ def DONNEES_BITGET(HEURES, d):
 
 	print(f"HEURES VOULUES = {len(heures_voulues)}, len(donnees_BTCUSDT)={len(donnees_BTCUSDT)}")
 
-	return donnees_BTCUSDT
+	return donnees_BTCUSDT[-__HEURES:]
 
 #	Ancien site : https://www.CryptoDataDownload.com
 
@@ -66,8 +75,31 @@ Unix,Date,Symbol,Open,High,Low,Close,Volume,Volume Base Asset,tradecount\n"""
 	return csv
 
 if __name__ == "__main__":
-	_15m = (2024-2020)*365 * 24 * 4
-	donnees = DONNEES_BITGET(_15m, d='15m')
-	csv = faire_un_csv(donnees, NOM="BTCUSDT")
-
-	with open("prixs/BTCUSDT_bitget_2020_2024.csv", 'w') as co: co.write(csv)
+	import struct as st
+	with open("structure_generale.bin", 'rb') as co:
+		bins = co.read()
+		(I,) = st.unpack('I', bins[:4])
+		elements = st.unpack('I', bins[4:])
+		#
+		MEGA_T, = elements
+	#
+	#
+	intervalles = {
+		'1H'  : (2024-2020) * 365 * 24,
+		'15m' : (2024-2020) * 365 * 24 * 4
+	}
+	CHOIX = '1H'
+	assert intervalles[CHOIX] % MEGA_T == 0
+	#
+	#
+	P = 1
+	N = 8
+	INTERVALLE_MAX = 256
+	DEPART = INTERVALLE_MAX * N
+	HEURES = intervalles[CHOIX] + DEPART + P
+	#
+	#
+	donnees = DONNEES_BITGET(HEURES, d=CHOIX)
+	csv     = faire_un_csv(donnees, NOM="BTCUSDT")
+	with open("prixs/BTCUSDT_bitget_2020_2024.csv", 'w') as co:
+		co.write(csv)

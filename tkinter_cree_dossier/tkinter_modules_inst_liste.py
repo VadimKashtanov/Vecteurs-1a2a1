@@ -6,14 +6,16 @@ from tkinter_cree_dossier.tkinter_insts import liste_insts
 from tkinter_cree_dossier.tkinter_insts import i__Entree
 from tkinter_cree_dossier.tkinter_insts import i_Activation
 from tkinter_cree_dossier.tkinter_insts import i_Biais, i_Const
+from tkinter_cree_dossier.tkinter_insts import i_Cadrans_Pondérés
 from tkinter_cree_dossier.tkinter_insts import i_Dot1d_X, i_Dot1d_XY
 from tkinter_cree_dossier.tkinter_insts import i_Kconvl1d, i_Kconvl1d_stricte, i_Kconvl2d_stricte
-from tkinter_cree_dossier.tkinter_insts import i_MatMul, i_MatMul_Canal
+from tkinter_cree_dossier.tkinter_insts import i_MatMul, i_MatMul_Canal, i_Matmul2d_Sans_Poids
 from tkinter_cree_dossier.tkinter_insts import i_Mul2, i_Mul3
 from tkinter_cree_dossier.tkinter_insts import i_Pool2_1d, i_Pool2x2_2d
-from tkinter_cree_dossier.tkinter_insts import i_Softmax
+from tkinter_cree_dossier.tkinter_insts import i_Somme
 from tkinter_cree_dossier.tkinter_insts import i_Somme2, i_Somme3, i_Somme4
 from tkinter_cree_dossier.tkinter_insts import i_Sub2
+from tkinter_cree_dossier.tkinter_insts import i_Vect_Div_Unitair
 from tkinter_cree_dossier.tkinter_insts import i_Y, i_Y_canalisation, i_Y_union_2
 
 conn = lambda sortie,inst,entree: (sortie, (inst,entree))
@@ -40,10 +42,15 @@ class MODULE_{nom_classe}(Module_Mdl):	#	A+B
 		Y = self.Y[0]
 		params = [p for _,p in self.params.items()]
 
+		assert 0 <= self.do <= 100
+		assert 0 <= self.dc <= 100
+
+		do, dc = self.do, self.dc
+
 		#	------------------
 
 		self.ix = [
-			Dico(i={nom_classe}, X=X, x={[None for _ in i.X]}, xt={[None for _ in i.X]}, y=Y, p=params, sortie=True)
+			Dico(i={nom_classe}, X=X, x={[None for _ in i.X]}, xt={[None for _ in i.X]}, y=Y, p=params, do=do, dc=dc, sortie=True)
 		]
 
 		return self.ix

@@ -2,7 +2,11 @@ class Module_Mdl:
 	bg  = None
 	fg  = None
 	img = None
-	def __init__(self, X=None, Y=None, params=None):
+	#
+	do = 0
+	dc = 0
+	#
+	def __init__(self, X=None, Y=None, params=None, do=0, dc=0):
 		if X != None:
 			assert len(X) == len(self.X)
 			self.X = X
@@ -12,6 +16,12 @@ class Module_Mdl:
 		if params != None:
 			assert len(list(params.keys())) == len(list(self.params.keys()))
 			self.params = params
+		if do != None:
+			assert 0 <= do <= 100
+			self.do = do
+		if dc != None:
+			assert 0 <= dc <= 100
+			self.dc = dc
 
 	def cree_elements_connections(self):
 		self.ix = []

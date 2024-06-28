@@ -22,7 +22,7 @@ class Modules(tk.Frame):
 				compound="left",
 				command=lambda _m=m:self.application.add_frame(_m())
 			).grid(
-				row=i_m%6,
-				column=i_m//6,
+				row=i_m%9,
+				column=i_m//9,
 				sticky='nsew'
 			)

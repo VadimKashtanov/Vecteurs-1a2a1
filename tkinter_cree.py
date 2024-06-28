@@ -20,8 +20,8 @@ class Application(tk.Tk):
 
 		self.canvas = LineCanvas(
 			self, self,
-			width=1550, height=935,
-			scrollregion=(0, 0, 1900, 2000),
+			width=1540, height=830,
+			scrollregion=(0, 0, 1540, 500),
 			bg=rgb(240,240,240),
 		)
 		self.boutons = Bouttons(
@@ -32,8 +32,8 @@ class Application(tk.Tk):
 		)
 
 		self.canvas  .grid(row=0, column=0, sticky='nsew')
-		self.boutons .grid(row=0, column=1, sticky='nsew')
-		self.modules .grid(row=1, column=0, sticky='nsew', columnspan=2)
+		self.boutons .grid(row=0, column=1, sticky='nsew', rowspan=2)
+		self.modules .grid(row=1, column=0, sticky='nsew')
 
 		#	---- Rapide ----
 		self.bind('+', self.ajouter_une_connection)

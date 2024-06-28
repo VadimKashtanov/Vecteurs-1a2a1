@@ -19,19 +19,19 @@ class GRU1D(Module_Mdl):	#	f(ax0+bx1+cx2+d)
 		logistique = 1
 
 		self.elements = {
-			'x' : MODULE_i_Y(X=[X], Y=[X], params={}).cree_ix(),
+			'x' : MODULE_i_Y(X=[X], Y=[X], params={}, do=self.do,dc=self.dc).cree_ix(),
 			#
-			'z' : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':logistique}).cree_ix(),
-			'r' : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':logistique}).cree_ix(),
+			'z' : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':logistique}, do=self.do,dc=self.dc).cree_ix(),
+			'r' : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':logistique}, do=self.do,dc=self.dc).cree_ix(),
 			#
-			'r*h' : MODULE_i_Mul2 (X=[Y,Y], Y=[Y], params={}).cree_ix(),
-			'ĥ'   : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':_tanh}).cree_ix(),
+			'r*h' : MODULE_i_Mul2 (X=[Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'ĥ'   : DOT1D_2(X=[X,Y], Y=[Y], params={'activ':_tanh}, do=self.do,dc=self.dc).cree_ix(),
 			#
-			'1'  : MODULE_i_Const(X=[], Y=[Y], params={'cst' : 1}).cree_ix(),
-			'(1-z)' : MODULE_i_Sub2(X=[Y,Y], Y=[Y], params={}).cree_ix(),
+			'1'  : MODULE_i_Const(X=[], Y=[Y], params={'cst' : 1}, do=self.do,dc=self.dc).cree_ix(),
+			'(1-z)' : MODULE_i_Sub2(X=[Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 			#
 			#(1-z)*h + z * ĥ
-			'h' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
+			'h' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 		}
 
 		#	======================

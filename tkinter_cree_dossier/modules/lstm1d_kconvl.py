@@ -35,47 +35,47 @@ class LSTM1D_CONVOLUTION(Module_Mdl):	#	f(ax0+bx1+cx2+d)
 		params_kconvl_C1C1 = {'K':K, 'C0':C1, 'C1':C1, 'im_X':im_X}
 
 		self.elements = {
-			'x' : MODULE_i_Y(X=[X], Y=[X], params={}).cree_ix(),
+			'x' : MODULE_i_Y(X=[X], Y=[X], params={}, do=self.do,dc=self.dc).cree_ix(),
 
 			# f = logistique(sF = Fx@x + Fh@h[-1] + Fc@c[-1] + Fb)
-			'f_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl).cree_ix(),
-			'f_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1).cree_ix(),
-			'f_c' :                  MUL_POID(X=[Y], Y=[Y], params={}).cree_ix(),
-			'f_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}).cree_ix(),
-			'f_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
-			'f_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}).cree_ix(),
+			'f_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl, do=self.do,dc=self.dc).cree_ix(),
+			'f_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1, do=self.do,dc=self.dc).cree_ix(),
+			'f_c' :                  MUL_POID(X=[Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'f_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'f_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'f_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}, do=self.do,dc=self.dc).cree_ix(),
 			
 			# i = logistique(sI = Ix@x + Ih@h[-1] + Ic@c[-1] + Ib)
-			'i_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl).cree_ix(),
-			'i_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1).cree_ix(),
-			'i_c' :                  MUL_POID(X=[Y], Y=[Y], params={}).cree_ix(),
-			'i_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}).cree_ix(),
-			'i_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
-			'i_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}).cree_ix(),
+			'i_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl, do=self.do,dc=self.dc).cree_ix(),
+			'i_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1, do=self.do,dc=self.dc).cree_ix(),
+			'i_c' :                  MUL_POID(X=[Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'i_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'i_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'i_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}, do=self.do,dc=self.dc).cree_ix(),
 			
 			#u =       tanh(sU = Ux@x + Uh@h[-1] +          + Ub)
-			'u_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl).cree_ix(),
-			'u_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1).cree_ix(),
-			'u_b' :            MODULE_i_Biais(X=[],  Y=[Y], params={}).cree_ix(),
-			'u_s' : MODULE_i_Somme3(X=[Y,Y,Y], Y=[Y], params={}).cree_ix(),
-			'u_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}).cree_ix(),
+			'u_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl, do=self.do,dc=self.dc).cree_ix(),
+			'u_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1, do=self.do,dc=self.dc).cree_ix(),
+			'u_b' :            MODULE_i_Biais(X=[],  Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'u_s' : MODULE_i_Somme3(X=[Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'u_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}, do=self.do,dc=self.dc).cree_ix(),
 			
 			#c = f*c[-1] + i*u
-			'c' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
+			'c' : AB_plus_CD(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 			
 			#ch = tanh(c)
-			'ch' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}).cree_ix(),
+			'ch' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':_tanh}, do=self.do,dc=self.dc).cree_ix(),
 			
 			#o = logistique(sO = Ox@x + Oh@h[-1] + Oc@c    + Ob)
-			'o_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl).cree_ix(),
-			'o_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1).cree_ix(),
-			'o_c' :                  MUL_POID(X=[Y], Y=[Y], params={}).cree_ix(),
-			'o_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}).cree_ix(),
-			'o_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}).cree_ix(),
-			'o_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}).cree_ix(),
+			'o_x' : MODULE_i_Kconvl1d_stricte(X=[X], Y=[Y], params=params_kconvl, do=self.do,dc=self.dc).cree_ix(),
+			'o_h' : MODULE_i_Kconvl1d_stricte(X=[Y], Y=[Y], params=params_kconvl_C1C1, do=self.do,dc=self.dc).cree_ix(),
+			'o_c' :                  MUL_POID(X=[Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'o_b' :  MODULE_i_Biais(X=[],  Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'o_s' : MODULE_i_Somme4(X=[Y,Y,Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
+			'o_a' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':logistique}, do=self.do,dc=self.dc).cree_ix(),
 			
 			#h = o * ch
-			'h' : MODULE_i_Mul2(X=[Y,Y], Y=[Y], params={}).cree_ix(),
+			'h' : MODULE_i_Mul2(X=[Y,Y], Y=[Y], params={}, do=self.do,dc=self.dc).cree_ix(),
 		}
 
 		#	======================

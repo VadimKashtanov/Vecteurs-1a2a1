@@ -10,9 +10,10 @@ from tkinter_cree_dossier.tkinter_insts import i_Kconvl1d, i_Kconvl1d_stricte, i
 from tkinter_cree_dossier.tkinter_insts import i_MatMul, i_MatMul_Canal
 from tkinter_cree_dossier.tkinter_insts import i_Mul2, i_Mul3
 from tkinter_cree_dossier.tkinter_insts import i_Pool2_1d, i_Pool2x2_2d
-from tkinter_cree_dossier.tkinter_insts import i_Softmax
+from tkinter_cree_dossier.tkinter_insts import i_Somme
 from tkinter_cree_dossier.tkinter_insts import i_Somme2, i_Somme3, i_Somme4
 from tkinter_cree_dossier.tkinter_insts import i_Sub2
+from tkinter_cree_dossier.tkinter_insts import i_Vect_Div_Unitair
 from tkinter_cree_dossier.tkinter_insts import i_Y, i_Y_canalisation, i_Y_union_2
 
 from tkinter_cree_dossier.tkinter_modules_inst_liste import *
@@ -36,22 +37,32 @@ class CHAINE(Module_Mdl):
 		X = self.X[0]
 		Y = self.Y[0]
 
+		do, dc = self.do, self.dc
+
 		assert N > 0
 
 		#	------------------
 
-		self.elements    = {}
-		self.connections = {}
-		#
-		self.elements   ['0'] = self.ELEMENT(X=[X],Y=[H],params=params_non_N_ou_H).cree_ix()
-		self.connections['0'] = {0:None}
-		#
-		for i in range(1,N-1):
-			self.elements   [str(i)] = self.ELEMENT(X=[H],Y=[H],params=params_non_N_ou_H).cree_ix()
-			self.connections[str(i)] = {0:(str(i-1), 0)}
-		#
-		self.elements   [str(N-1)] = self.ELEMENT(X=[H],Y=[Y],params=params_non_N_ou_H).cree_ix()
-		self.connections[str(N-1)] = {0:(str(N-1-1), 0)}
+		if N == 1:
+			self.elements    = {}
+			self.connections = {}
+			#
+			self.elements   ['0'] = self.ELEMENT(X=[X],Y=[Y],params=params_non_N_ou_H,do=do,dc=dc).cree_ix()
+			self.connections['0'] = {0:None}
+		else:
+			self.elements    = {}
+			self.connections = {}
+			#
+			self.elements   ['0'] = self.ELEMENT(X=[X],Y=[H],params=params_non_N_ou_H,do=do,dc=dc).cree_ix()
+			self.connections['0'] = {0:None}
+			#
+			for i in range(1,N-1):
+				self.elements   [str(i)] = self.ELEMENT(X=[H],Y=[H],params=params_non_N_ou_H,do=do,dc=dc).cree_ix()
+				self.connections[str(i)] = {0:(str(i-1), 0)}
+			#
+			self.elements   [str(N-1)] = self.ELEMENT(X=[H],Y=[Y],params=params_non_N_ou_H,do=do,dc=dc).cree_ix()
+			self.connections[str(N-1)] = {0:(str(N-1-1), 0)}
+
 		#
 		self.cree_elements_connections()
 		return self.ix
@@ -64,12 +75,14 @@ class RESIDUE(Module_Mdl):
 		X = self.X[0]
 		Y = self.Y[0]
 
+		do, dc = self.do, self.dc
+
 		#	------------------
 
 		self.elements    = {
-			'x'       : MODULE_i_Y     (X=[X], Y=[X], params={}).cree_ix(),
-			'residue' : self.ELEMENT   (X=[X], Y=[X], params=self.params).cree_ix(),
-			'somme'   : MODULE_i_Somme2(X=[X,X], Y=[X], params={}).cree_ix(),
+			'x'       : MODULE_i_Y     (X=[X], Y=[X], params={},do=do,dc=dc).cree_ix(),
+			'residue' : self.ELEMENT   (X=[X], Y=[X], params=self.params,do=do,dc=dc).cree_ix(),
+			'somme'   : MODULE_i_Somme2(X=[X,X], Y=[X], params={},do=do,dc=dc).cree_ix(),
 		}
 		self.connections = {
 			'x'       : {0:None},

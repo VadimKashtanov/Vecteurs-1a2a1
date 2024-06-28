@@ -35,15 +35,23 @@ class DraggableFrame(tk.Frame):
 			self.ys += [Entree(self, f'Y{i}', y, bg='white')]
 			self.ys[-1].grid                                                  (row=1+i, column=3)
 			tk.Button(self, text='.', command=lambda _y=i:self.sel_A(_y)).grid(row=1+i, column=4)
+		#
+		self.drop_connect = Entree(self, "Dc%", 0)
+		self.drop_____out = Entree(self, "Do%", 0)
+
+		self.drop_connect.grid(row=1+max([len(module.X), len(module.Y), len(module.params.items())])+1, column=1, columnspan=2)
+		self.drop_____out.grid(row=1+max([len(module.X), len(module.Y), len(module.params.items())])+1, column=3, columnspan=2)
 
 	def mettre_a_jour_module(self):
 		for x in range(len(self.xs)):
 			self.module.X[x] = eval(self.xs[x].val.get())
-			#print(self.module.__class__, self.module.X)
 		for p in range(len(self.ps)):
 			self.module.params[self.ps[p].A] = eval(self.ps[p].val.get())
 		for y in range(len(self.ys)):
 			self.module.Y[y] = eval(self.ys[y].val.get())
+
+		self.module.do = eval(self.drop_____out.val.get())
+		self.module.dc = eval(self.drop_connect.val.get())
 
 	def set_entree_depuis_valeurs_module(self):
 		for x in range(len(self.xs)):
@@ -52,6 +60,9 @@ class DraggableFrame(tk.Frame):
 			self.ps[p].val.set(str(self.module.params[self.ps[p].A]))
 		for y in range(len(self.ys)):
 			self.ys[y].val.set(str(self.module.Y[y]))
+
+		self.drop_____out.val.set(str(self.module.do))
+		self.drop_connect.val.set(str(self.module.dc))
 
 		self.lbl.config(text=self.module.nom + f'  #{self.numero}')
 

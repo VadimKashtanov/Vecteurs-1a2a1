@@ -9,6 +9,9 @@ class Dico:
 	#
 	p = []
 	#
+	do = 0 #% drop out
+	dc = 0 #% drop connect
+	#
 	sortie = False
 	# 
 	def __init__(self, **karg):
@@ -16,13 +19,13 @@ class Dico:
 			self[k] = v
 
 	def __setitem__(self, k, v):
-		if k in ('i', 'X', 'x', 'xt', 'y', 'p', 'sortie'):
+		if k in ('i', 'X', 'x', 'xt', 'y', 'p', 'do', 'dc', 'sortie'):
 			self.__setattr__(f'{k}', v)
 		else:
 			raise Exception(f"Argument {k} n'existe pas")
 
 	def __getitem__(self, k):
-		if k in ('i', 'X', 'x', 'xt', 'y', 'p', 'sortie'):
+		if k in ('i', 'X', 'x', 'xt', 'y', 'p', 'do', 'dc', 'sortie'):
 			return self.__getattribute__(f'{k}')
 
 	def __str__(self):
@@ -31,7 +34,7 @@ class Dico:
 		i = str(self.i)
 		if (len(i) < 60):
 			i = i + " "*(60 - len(i))
-		return f'<id={id(self)}> i:{i}, X:{self.X}, x:{list(map(montrer,self.x))}, xt:{self.xt}, y:{self.y}, p:{self.p}, sortie:{self.sortie}'
+		return f'<id={id(self)}> i:{i}, X:{self.X}, x:{list(map(montrer,self.x))}, xt:{self.xt}, y:{self.y}, p:{self.p}, do={self.do}% dc={self.dc}% sortie:{self.sortie}'
 
 
 	def copier(self):
@@ -42,5 +45,7 @@ class Dico:
 			xt=self.xt,
 			y=self.y,
 			p=self.p,
+			do=self.do,
+			dc=self.dc,
 			sortie=self.sortie
 		)

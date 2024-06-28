@@ -1,11 +1,11 @@
 from tkinter_cree_dossier.modules._etc import *
 
-from tkinter_cree_dossier.modules.dot1d import DOT1D__CHAINE
+from tkinter_cree_dossier.modules.dot1d import DOT1D, DOT1D__CHAINE
 
 class RESEAU(Module_Mdl):
 	bg = 'cyan'
 	fg = 'black'
-	nom = "RESEAU"
+	nom = "[RESEAU]"
 	X, Y = [0], [0]
 	X_noms, Y_noms = ["X"], ["Y"] # LSTM [X], [H]
 	params = {
@@ -13,6 +13,7 @@ class RESEAU(Module_Mdl):
 		'N' : 0,
 		'activ cachée' : 0,
 		'activ sortie' : 0,
+		'C0' : 1,
 	}
 	def cree_ix(self):
 		#	Params
@@ -21,6 +22,8 @@ class RESEAU(Module_Mdl):
 
 		ac_ca = self.params['activ cachée']
 		ac_so = self.params['activ sortie']
+
+		C0 = self.params['C0']
 
 		X = self.X[0]
 		Y = self.Y[0]
@@ -31,12 +34,12 @@ class RESEAU(Module_Mdl):
 		#	------------------
 
 		self.elements = {
-			'reseau'     : DOT1D__CHAINE      (X=[X], Y=[Y], params={'N':N, 'H':H, 'C0':1, 'activ':ac_ca}).cree_ix(),
-			'activation' : MODULE_i_Activation(X=[Y], Y=[Y], params={'activ':ac_so}).cree_ix()
+			'reseau' : DOT1D__CHAINE(X=[X], Y=[H], params={'N':N-1, 'H':H, 'C0':C0, 'activ':ac_ca}, do=self.do,dc=self.dc).cree_ix(),
+			'sortie' : DOT1D        (X=[H], Y=[Y], params={'C0':C0, 'activ':ac_so}, do=self.do,dc=self.dc).cree_ix()
 		}
 		self.connections = {
 			'reseau'     : {0:None},
-			'activation' : {0:('reseau', 0)}
+			'sortie' : {0:('reseau', 0)}
 		}
 
 		self.cree_elements_connections()

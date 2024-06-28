@@ -6,7 +6,7 @@ from tkinter import messagebox
 from tkinter import filedialog
 
 from tkinter_cree_dossier.tkinter_modules_inst_liste import modules_inst # Modules : Instructions Induviduelle
-from tkinter_cree_dossier.tkinter_modules_liste_2    import modules      # Modules : Assemblage d'instructions
+from tkinter_cree_dossier.tkinter_modules_liste      import modules      # Modules : Assemblage d'instructions
 
 from tkinter_cree_dossier.tkinter_insts              import liste_insts
 
